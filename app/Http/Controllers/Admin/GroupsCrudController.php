@@ -34,7 +34,7 @@ class GroupsCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\Groups::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/groups');
-        CRUD::setEntityNameStrings('groups', 'groups');
+        CRUD::setEntityNameStrings('group', 'groups');
     }
 
     /**
@@ -45,7 +45,10 @@ class GroupsCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::setFromDb(); // set columns from db columns.
+        CRUD::column(['name' => 'name'])->label('Name');
+        CRUD::column(['name' => 'code'])->label('Code');
+        CRUD::column(['name' => 'created_at'])->label('Created At');
+
 
         /**
          * Columns can be defined using the fluent syntax:
@@ -62,7 +65,8 @@ class GroupsCrudController extends CrudController
     protected function setupCreateOperation()
     {
         CRUD::setValidation(GroupsRequest::class);
-        CRUD::setFromDb(); // set fields from db columns.
+        CRUD::field(['name' => 'name']);
+        CRUD::field(['name' => 'code']);
 
         /**
          * Fields can be defined using the fluent syntax:
@@ -79,29 +83,18 @@ class GroupsCrudController extends CrudController
     protected function setupUpdateOperation()
     {
 
-        //custom validation for update
-        CRUD::setValidation(
-            [
-                'name' => 'required|min:5|max:255|unique:groups,name,' . $this->crud->getRequest()->request->get('id'),
-                'code' => 'required|unique:groups,code,' . $this->crud->getRequest()->request->get('id'),
-            ]
-        );
-        CRUD::setFromDb(); // set fields from db columns.
+        $this->setupCreateOperation();
+
 
     }
 
-    public function index()
-    {
-        $this->crud->setTitle('Group list', 'index');
 
-        $response = $this->parentIndex();
-
-        return $response;
-    }
     public function destroy($id)
     {
         $count = group::withCount('items')->find($this->crud->getCurrentEntryId())->items_count;
         if ($count > 0) {
+            return ["error" => ['This group cannot be deleted there is : ' . $count . ' Item connect to it']];
+
         } else {
 
             return $this->parentDestroy($id);

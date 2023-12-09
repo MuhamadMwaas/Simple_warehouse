@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Validation\Rule;
 class GroupsRequest extends FormRequest
 {
     /**
@@ -25,10 +25,13 @@ class GroupsRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:5|max:255|unique:groups,name',
-            'code' => 'required|unique:groups,code'
+            // 'name' => 'required|min:5|max:255|unique:groups,name',
+            'name' => ['required', 'min:5', Rule::unique('groups', 'name')->ignore($this->id)],
+            'code' => ['required',  Rule::unique('groups', 'code')->ignore($this->id)],
         ];
     }
+
+   
 
     /**
      * Get the validation attributes that apply to the request.
