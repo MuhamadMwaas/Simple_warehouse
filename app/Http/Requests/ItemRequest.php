@@ -30,7 +30,7 @@ class ItemRequest extends FormRequest
             'name' => ['required', 'min:4', Rule::unique('items', 'name')->ignore($this->id)],
             'code' => ['required',  Rule::unique('items', 'code')->ignore($this->id)],
             'min_quantity' => 'required|integer|min:1',
-            'image' => 'mimes:jpeg,png,jpg,svg,',
+            'image' => 'required|mimes:jpeg,png,jpg,svg,',
             'price' => 'required|numeric|min:0.1',
         ];
     }

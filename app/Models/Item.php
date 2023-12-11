@@ -33,5 +33,5 @@ class Item extends Model
     {
         dd($this);
     }
-
+ 
 }

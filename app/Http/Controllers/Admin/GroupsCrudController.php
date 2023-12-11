@@ -48,6 +48,12 @@ class GroupsCrudController extends CrudController
         CRUD::column(['name' => 'name'])->label('Name');
         CRUD::column(['name' => 'code'])->label('Code');
         CRUD::column(['name' => 'created_at'])->label('Created At');
+        CRUD::column([
+            'name' => 'items',
+            'type' => 'model_function',
+            'function_name' => 'countItems',
+        ])->label('items');
+        
 
 
         /**

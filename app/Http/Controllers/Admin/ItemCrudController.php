@@ -39,7 +39,7 @@ class ItemCrudController extends CrudController
         CRUD::setEntityNameStrings('item', 'items');
     }
 
-  
+
     /**
      * Define what happens when the List operation is loaded.
      * 
@@ -86,7 +86,6 @@ class ItemCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
- 
     }
 
     protected function setupShowOperation()
@@ -97,8 +96,13 @@ class ItemCrudController extends CrudController
 
         // //make image column view the image
         CRUD::column([
-            'type' => 'image', 'name' => 'image', 'label' => 'image', 'disk' => 'public', 'path' => 'images', 'height' => '250px',
-        
+            'type' => 'image',
+            'name' => 'image',
+            'label' => 'image',
+            'disk' => 'public',
+            'path' => 'images',
+            'height' => '250px',
+
         ])->after('active');
     }
 
@@ -154,9 +158,11 @@ class ItemCrudController extends CrudController
                 'disk' => 'public', // the disk where file will be stored
                 'path' => 'images', // the path inside the disk where file will be stored
             ],
+            'upload' => true,
         ]);
         CRUD::field(['name' => 'active']);
     }
+
 
     protected function itemcolumn()
     {
@@ -195,5 +201,4 @@ class ItemCrudController extends CrudController
             'path' => 'images',
         ]);
     }
-    
 }

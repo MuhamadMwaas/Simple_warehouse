@@ -18,4 +18,6 @@ class group extends Model
     {
         return $this->hasMany(Item::class, 'group_id', 'id');
     }
+
+  
 }
