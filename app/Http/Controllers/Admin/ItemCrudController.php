@@ -129,15 +129,6 @@ class ItemCrudController extends CrudController
     //     return $response;
     // }
 
-    //update action
-    public function update()
-    {
-        CRUD::setValidation(ItemRequest::class);
-
-        $response = $this->parentUpdate();
-        return $response;
-    }
-
     protected function itemfiled()
     {
         CRUD::field([

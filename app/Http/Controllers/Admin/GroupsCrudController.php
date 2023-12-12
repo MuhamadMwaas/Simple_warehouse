@@ -45,7 +45,7 @@ class GroupsCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column(['name' => 'name'])->label('Name');
+        CRUD::column(['name' => 'name'])->label('Name')->trans();
         CRUD::column(['name' => 'code'])->label('Code');
         CRUD::column(['name' => 'created_at'])->label('Created At');
         CRUD::column([
@@ -54,13 +54,13 @@ class GroupsCrudController extends CrudController
             'function_name' => 'countItems',
         ])->label('items');
         
-
-
         /**
          * Columns can be defined using the fluent syntax:
          * - CRUD::column('price')->type('number');
          */
     }
+
+
 
     /**
      * Define what happens when the Create operation is loaded.
@@ -88,10 +88,7 @@ class GroupsCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
-
         $this->setupCreateOperation();
-
-
     }
 
 

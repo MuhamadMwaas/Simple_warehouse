@@ -26,8 +26,8 @@ class GroupsRequest extends FormRequest
     {
         return [
             // 'name' => 'required|min:5|max:255|unique:groups,name',
-            'name' => ['required', 'min:5', Rule::unique('groups', 'name')->ignore($this->id)],
-            'code' => ['required',  Rule::unique('groups', 'code')->ignore($this->id)],
+            'name' => ['required', 'min:5', 'string', Rule::unique('groups', 'name')->ignore($this->id)],
+            'code' => ['required', 'string',  Rule::unique('groups', 'code')->ignore($this->id)],
         ];
     }
 

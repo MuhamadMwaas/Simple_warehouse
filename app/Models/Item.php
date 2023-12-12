@@ -29,9 +29,6 @@ class Item extends Model
     {
         return $this->belongsToMany(supplier::class, 'imports', 'item_id', 'supplier_id');
     }
-    public function moderate()
-    {
-        dd($this);
-    }
+
  
 }
