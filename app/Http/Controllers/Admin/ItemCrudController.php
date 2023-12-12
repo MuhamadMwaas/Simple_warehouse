@@ -40,9 +40,6 @@ class ItemCrudController extends CrudController
     }
 
 
-
-
-
     /**
      * Define what happens when the List operation is loaded.
      * 
@@ -51,37 +48,8 @@ class ItemCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column(['name' => 'code']);
-        CRUD::column(['name' => 'name']);
-        $this->crud->addColumn([
-            'name' => 'groups',
-            'type' => 'select',
-            'label' => 'Group Name',
-            'entity' => 'group',
-            'attribute' => 'name',
-            'model' => group::class,
-        ]);
-        CRUD::column(['name' => 'min_quantity']);
-        CRUD::column(['name' => 'current_quantity']);
-        CRUD::column(['name' => 'price']);
-        CRUD::column([
-            'name' => 'active',
-            'label' => "Active",
-            'type' => 'model_function',
-            'function_name' => 'getStatusIcon',
-            'escaped' => false,
-        ]);
 
-        CRUD::column(['name' => 'created_at']);
-        $this->crud->addColumn([
-            'type' => 'image',
-            'name' => 'image',
-            'label' => 'image',
-            'disk' => 'public',
-            'path' => 'images',
-        ]);
-
-        // CRUD::setFromDb(); // set columns from db columns.
+        $this->itemcolumn();
         /**
          * Columns can be defined using the fluent syntax:
          * - CRUD::column('price')->type('number');
@@ -96,30 +64,12 @@ class ItemCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        //group list filed
-        CRUD::field([
-            'type' => 'select',
-            'name' => 'group_id',
-            'entity' => 'group',
-            'attribute' => 'name',
-            'pivot' => true,
-        ]);
-
-        //image uload filed
-        CRUD::field('image')
-            ->type('upload')
-            ->withFiles([
-                'disk' => 'public', // the disk where file will be stored
-                'path' => 'images', // the path inside the disk where file will be stored
-            ]);
+        //items list filed
+        $this->itemfiled();
 
         //add validation
         CRUD::setValidation(ItemRequest::class);
 
-
-        CRUD::setFromDb(); // set fields from db columns.
-
-        CRUD::field('current_quantity')->remove();
 
         /**
          * Fields can be defined using the fluent syntax:
@@ -135,47 +85,24 @@ class ItemCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
-        //group list filed
-        CRUD::field([
-            'type' => 'select',
-            'name' => 'group_id',
-            'entity' => 'group',
-            'attribute' => 'name',
-            'pivot' => true,
-        ]);
-        CRUD::field([
-            'type' => 'upload',
-            'name' => 'image',
-            'disk' => 'public',
-            'path' => 'images',
-            'withFiles' => true,
-            'files' => true
-
-
-        ]);
-
-
-
-        CRUD::setFromDb(); // set fields from db columns.
-
-        CRUD::field('current_quantity')->remove();
+        $this->setupCreateOperation();
     }
 
     protected function setupShowOperation()
     {
+        $this->itemcolumn();
 
-        CRUD::setFromDb(); // set fields from db columns.
         CRUD::column('image')->remove();
 
-        //make image column view the image
+        // //make image column view the image
         CRUD::column([
             'type' => 'image',
             'name' => 'image',
             'label' => 'image',
             'disk' => 'public',
             'path' => 'images',
-            'height' => '120px',
-            'width' => '120px',
+            'height' => '250px',
+
         ])->after('active');
     }
 
@@ -202,21 +129,67 @@ class ItemCrudController extends CrudController
     //     return $response;
     // }
 
-    //update action
-    public function update()
+    protected function itemfiled()
     {
-        //custom validation for update
-        CRUD::setValidation(
-            [
-                'name' => 'required|min:5|max:255|unique:items,name,' . $this->crud->getRequest()->request->get('id'),
-                'code' => 'required|unique:items,code,' . $this->crud->getRequest()->request->get('id'),
-                'min_quantity' => 'required|integer|min:1',
-                'image' => 'mimes:jpeg,png,jpg,svg,.png',
-                'price' => 'required|numeric|min:0.1',
-            ]
-        );
-        // dd($this->crud->getRequest()->request);
-        $response = $this->parentUpdate();
-        return $response;
+        CRUD::field([
+            'type' => 'select',
+            'name' => 'group_id',
+            'entity' => 'group',
+            'attribute' => 'name',
+            'pivot' => true,
+        ]);
+        CRUD::field(['name' => 'name']);
+        CRUD::field(['name' => 'code']);
+        CRUD::field(['name' => 'min_quantity']);
+        CRUD::field(['name' => 'price']);
+        CRUD::field([
+            'name' => 'image',
+            'type' => 'upload',
+            'withFiles' => [
+                'disk' => 'public', // the disk where file will be stored
+                'path' => 'images', // the path inside the disk where file will be stored
+            ],
+            'upload' => true,
+        ]);
+        CRUD::field(['name' => 'active']);
+    }
+
+
+    protected function itemcolumn()
+    {
+        CRUD::column(['name' => 'code']);
+        CRUD::column(['name' => 'name']);
+        $this->crud->addColumn([
+            'name' => 'group',
+            'type' => 'select',
+            'label' => 'Group Name',
+            'entity' => 'group',
+            'attribute' => 'name',
+            'model' => group::class,
+        ]);
+        CRUD::column(['name' => 'min_quantity']);
+        CRUD::column(['name' => 'current_quantity', 'type' => 'number']);
+        CRUD::column([
+            'name' => 'price',
+            'label' => "price",
+            'type' => 'view',
+            'view' => 'Crud.Price_column',
+            'escaped' => false,
+        ]);
+        CRUD::column([
+            'name' => 'active',
+            'label' => "Active",
+            'type' => 'view',
+            'view' => 'Crud.Active_column',
+            'escaped' => false,
+        ]);
+        CRUD::column(['name' => 'created_at', 'format' => 'Y-M-D - H:mm']);
+        $this->crud->addColumn([
+            'type' => 'image',
+            'name' => 'image',
+            'label' => 'image',
+            'disk' => 'public',
+            'path' => 'images',
+        ]);
     }
 }
