@@ -4,3 +4,5 @@
 <x-backpack::menu-item title="Users" icon="la la-group" :link="backpack_url('user')" />
 <x-backpack::menu-item title="Groups" icon="las la-sitemap" :link="backpack_url('groups')" />
 <x-backpack::menu-item title="Items" icon="las la-tasks" :link="backpack_url('item')" />
+<x-backpack::menu-item title="Customers" icon="las la-user-tie" :link="backpack_url('customer')" />
+<x-backpack::menu-item title="Exports" icon="las la-file-export" :link="backpack_url('export')" />

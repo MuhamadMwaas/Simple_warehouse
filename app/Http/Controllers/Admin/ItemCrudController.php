@@ -92,7 +92,7 @@ class ItemCrudController extends CrudController
     {
         $this->itemcolumn();
 
-        CRUD::column('image')->remove();
+        CRUD::column(['image'])->remove();
 
         // //make image column view the image
         CRUD::column([

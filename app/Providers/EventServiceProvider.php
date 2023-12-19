@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\deleteExport;
+use App\Events\ExportCreating;
+use App\Listeners\deleteExportListener;
+use App\Listeners\ExportCreatingListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,6 +22,8 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        ExportCreating::class => [ExportCreatingListener::class],
+        deleteExport::class => [deleteExportListener::class]
     ];
 
     /**

@@ -2,26 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\GroupsRequest;
-use App\Models\group;
+use App\Http\Requests\CustomerRequest;
+use App\Models\customer;
+use App\Models\export;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class GroupsCrudController
+ * Class CustomerCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class GroupsCrudController extends CrudController
+class CustomerCrudController extends CrudController
 {
-    // use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation {
-        index as parentIndex;
-    }
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation {
         destroy as parentDestroy;
     }
@@ -32,9 +29,9 @@ class GroupsCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Groups::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/groups');
-        CRUD::setEntityNameStrings('group', 'groups');
+        CRUD::setModel(\App\Models\Customer::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/customer');
+        CRUD::setEntityNameStrings('customer', 'customers');
     }
 
     /**
@@ -45,22 +42,12 @@ class GroupsCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column(['name' => 'name'])->label('Name');
-        CRUD::column(['name' => 'code'])->label('Code');
-        CRUD::column(['name' => 'created_at'])->label('Created At');
-        CRUD::column([
-            'name' => 'items',
-            'type' => 'model_function',
-            'function_name' => 'countItems',
-        ])->label('items');
-        
+        $this->customercolumns();
         /**
          * Columns can be defined using the fluent syntax:
          * - CRUD::column('price')->type('number');
          */
     }
-
-
 
     /**
      * Define what happens when the Create operation is loaded.
@@ -70,10 +57,8 @@ class GroupsCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(GroupsRequest::class);
-        CRUD::field(['name' => 'name']);
-        CRUD::field(['name' => 'code']);
-
+        CRUD::setValidation(CustomerRequest::class);
+        $this->customerfields();
         /**
          * Fields can be defined using the fluent syntax:
          * - CRUD::field('price')->type('number');
@@ -92,15 +77,41 @@ class GroupsCrudController extends CrudController
     }
 
 
+    protected function setupShowOperation()
+    {
+        $this->customercolumns();
+    }
+
+
+
+    // delete element
     public function destroy($id)
     {
-        $count = group::withCount('items')->find($this->crud->getCurrentEntryId())->items_count;
+        $count = customer::withCount('exports')->find($this->crud->getCurrentEntryId())->exports_count;
         if ($count > 0) {
-            return ["error" => ['This group cannot be deleted there is : ' . $count . ' Item connect to it']];
-
+            return ["error" => ['This customer cannot be deleted there is : ' . $count . ' export record connect to it']];
         } else {
 
             return $this->parentDestroy($id);
         }
     }
+
+    protected function customercolumns()
+    {
+        CRUD::column(['name' => 'name', 'label' => 'Name', 'type' => 'string']);
+        CRUD::column(['name' => 'email', 'label' => 'Email', 'type' => 'email']);
+        CRUD::column(['name' => 'phone', 'label' => 'Phone', 'type' => 'phone']);
+        CRUD::column(['name' => 'active', 'label' => 'status', 'type' => 'boolean']);
+        CRUD::column(['name' => 'created_at', 'label' => 'created_at', 'type' => 'date']);
+    }
+
+    protected function customerfields()
+    {
+        CRUD::field(['name' => 'name', 'label' => 'Name', 'type' => 'text']);
+        CRUD::field(['name' => 'email', 'label' => 'Email', 'type' => 'email']);
+        CRUD::field(['name' => 'phone', 'label' => 'Phone', 'type' => 'number']);
+        CRUD::field(['name' => 'active', 'label' => 'status', 'type' => 'checkbox', 'default' => true]);
+    }
+
+    
 }
